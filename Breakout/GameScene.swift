@@ -110,6 +110,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         livesLabel.fontSize = 18
         livesLabel.fontColor = .black
+        livesLabel.fontName = "Arial"
         livesLabel.position = CGPoint(x: frame.minX + 50, y: frame.minY + 18)
         addChild(livesLabel)
         
@@ -150,14 +151,22 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func didBegin(_ contact: SKPhysicsContact) {
         if contact.bodyA.node?.name == "brick" ||
             contact.bodyB.node?.name == "brick" {
-            print("You Win!")
-            brick.removeFromParent()
-            ball.removeFromParent()
+            gameOver(winner: true)
         }
         if contact.bodyA.node?.name == "loseZone" ||
             contact.bodyB.node?.name == "loseZone" {
-            print("You Lose!")
-            ball.removeFromParent()
+            gameOver(winner: false)
+        }
+    }
+    func gameOver(winner: Bool) {
+        playingGame = false
+        playLabel.alpha = 1
+        resetGame()
+        if winner {
+            playLabel.text = "You win! Tap here to play again"
+        }
+        else {
+            playLabel.text = "You lose! Tap here to play again"
         }
     }
 }
