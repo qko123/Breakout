@@ -9,6 +9,12 @@ import SpriteKit
 import GameplayKit
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
+    var playLabel = SKLabelNode()
+    var livesLabel = SKLabelNode()
+    var scoreLabel = SKLabelNode()
+    var playingGame = false
+    var score = 0
+    var lives = 3
     var loseZone = SKSpriteNode()
     var ball = SKShapeNode()
     var paddle = SKSpriteNode()
@@ -19,7 +25,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         createBackground()
         makeLoseZone()
         resetGame()
-        kickBall()
+        makeLabels()
         
     }
     func createBackground() {
@@ -58,10 +64,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         makeBall()
         makePaddle()
         makeBrick()
+        updateLabels()
     }
     func kickBall() {
         ball.physicsBody?.isDynamic = true
         ball.physicsBody?.applyImpulse(CGVector(dx: 3, dy: 5))
+    }
+    func updateLabels() {
+        scoreLabel.text = "Score: \(score)"
+        livesLabel.text = "Lives: \(lives)"
     }
     func makePaddle() {
         paddle.removeFromParent()
@@ -89,16 +100,51 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         loseZone.physicsBody?.isDynamic = false
         addChild(loseZone)
     }
+    func makeLabels() {
+        playLabel.fontSize = 24
+        playLabel.text = "Tap To Start"
+        playLabel.fontName = "Arial"
+        playLabel.position = CGPoint(x: frame.midX, y: frame.midY - 50)
+        playLabel.name = "playLabel"
+        addChild(playLabel)
+        
+        livesLabel.fontSize = 18
+        livesLabel.fontColor = .black
+        livesLabel.position = CGPoint(x: frame.minX + 50, y: frame.minY + 18)
+        addChild(livesLabel)
+        
+        scoreLabel.fontSize = 18
+        scoreLabel.fontColor = .black
+        scoreLabel.fontName = "Arial"
+        scoreLabel.position = CGPoint(x: frame.maxX - 50, y: frame.minY + 18)
+        addChild(scoreLabel)
+    }
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         for touch in touches {
             let location = touch.location(in: self)
-            paddle.position.x = location.x
+            if playingGame {
+                paddle.position.x = location.x
+            }
+            else {
+                for node in nodes(at: location) {
+                    if node.name == "playLabel" {
+                        playingGame = true
+                        node.alpha = 0
+                        score = 0
+                        lives = 3
+                        updateLabels()
+                        kickBall()
+                    }
+                }
+            }
         }
     }
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         for touch in touches {
             let location = touch.location(in: self)
-            paddle.position.x = location.x
+            if playingGame {
+                paddle.position.x = location.x
+            }
         }
     }
     func didBegin(_ contact: SKPhysicsContact) {
