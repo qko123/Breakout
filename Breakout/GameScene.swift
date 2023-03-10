@@ -78,7 +78,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func makePaddle() {
         paddle.removeFromParent()
         paddle = SKSpriteNode(color: .white, size: CGSize(width: frame.width/4, height: 20))
-        paddle.position = CGPoint(x: frame.midX, y: frame.midY + 125)
+        paddle.position = CGPoint(x: frame.midX, y: frame.midY - 50)
         paddle.name = "paddle"
         paddle.physicsBody = SKPhysicsBody(rectangleOf: paddle.size)
         paddle.physicsBody?.isDynamic = false
@@ -126,7 +126,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         playLabel.fontSize = 24
         playLabel.text = "Tap To Start"
         playLabel.fontName = "Arial"
-        playLabel.position = CGPoint(x: frame.midX, y: frame.midY - 50)
+        playLabel.position = CGPoint(x: frame.midX, y: frame.midY + 20)
         playLabel.name = "playLabel"
         addChild(playLabel)
         
@@ -214,6 +214,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         else {
             playLabel.text = "You lose! Tap here to play again"
+        }
+    }
+    override func update(_ currentTime: TimeInterval) {
+        if abs(ball.physicsBody!.velocity.dx) < 100 {
+            ball.physicsBody?.applyImpulse(CGVector(dx: Int.random(in: -3...3), dy: 0))
+        }
+        if abs(ball.physicsBody!.velocity.dy) < 100 {
+            ball.physicsBody?.applyImpulse(CGVector(dx: 0, dy: Int.random(in: -3...3)))
         }
     }
 }
